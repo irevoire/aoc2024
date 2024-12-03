@@ -31,18 +31,15 @@ fn main() {
                 input = rem.chars();
             } else if let Some(rem) = try_parse_dont(input.as_str()) {
                 enabled = false;
-                let _ = input.next();
-                // input = rem.chars();
+                input = rem.chars();
             } else if input.next().is_none() {
                 break;
             }
         } else {
             if let Some(rem) = try_parse_do(input.as_str()) {
                 enabled = true;
-                let _ = input.next();
-                // input = rem.chars();
-            }
-            if input.next().is_none() {
+                input = rem.chars();
+            } else if input.next().is_none() {
                 break;
             }
         }
