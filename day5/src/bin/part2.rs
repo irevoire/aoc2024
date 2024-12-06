@@ -16,52 +16,36 @@ fn main() {
 
     let mut output = 0;
 
-    for (i, order) in input.lines().enumerate() {
-        println!("{i}/{}", input.len());
-        let order: Vec<usize> = order
+    for order in input.lines() {
+        let mut order: Vec<usize> = order
             .split(',')
             .map(|n| n.parse::<usize>().unwrap())
             .collect();
 
-        let mut forbidden_numbers = HashSet::new();
-
-        let mut failed = false;
-        for page in order.iter().rev() {
-            if forbidden_numbers.contains(page) {
-                failed = true;
-                break;
-            } else {
-                let forbidden = requires(&rules, *page);
-                forbidden_numbers = forbidden_numbers.union(&forbidden).copied().collect();
+        if errors_at(&rules, &order).is_some() {
+            while let Some(idx) = errors_at(&rules, &order) {
+                order.swap(idx, idx + 1);
             }
-        }
-        if failed {
-            use aoc::itertools::Itertools;
-            // println!("FAILED {order:?}");
-            for permutation in order.iter().cloned().permutations(order.len()) {
-                // println!("trying with {permutation:?}");
-                let mut forbidden_numbers = HashSet::new();
-                let mut failed = false;
 
-                for page in permutation.iter().rev() {
-                    if forbidden_numbers.contains(page) {
-                        failed = true;
-                        break;
-                    } else {
-                        let forbidden = requires(&rules, *page);
-                        forbidden_numbers = forbidden_numbers.union(&forbidden).copied().collect();
-                    }
-                }
-
-                if !failed {
-                    output += permutation[order.len() / 2];
-                    break;
-                }
-            }
+            output += order[order.len() / 2];
         }
     }
 
     println!("{output}");
+}
+
+fn errors_at(rules: &[(usize, usize)], order: &[usize]) -> Option<usize> {
+    let mut forbidden_numbers = HashSet::new();
+
+    for (idx, page) in order.iter().enumerate().rev() {
+        if forbidden_numbers.contains(page) {
+            return Some(idx);
+        } else {
+            let forbidden = requires(&rules, *page);
+            forbidden_numbers = forbidden_numbers.union(&forbidden).copied().collect();
+        }
+    }
+    None
 }
 
 fn requires(rules: &[(usize, usize)], page: usize) -> HashSet<usize> {
@@ -70,10 +54,4 @@ fn requires(rules: &[(usize, usize)], page: usize) -> HashSet<usize> {
         .filter(|(n, _)| *n == page)
         .map(|(_, p)| *p)
         .collect()
-}
-
-fn solve(rules: &[(usize, usize)], order: &[usize]) -> Option<Vec<usize>> {
-    let mut ret = Vec::new();
-
-    for page in 0..order.len() {}
 }
