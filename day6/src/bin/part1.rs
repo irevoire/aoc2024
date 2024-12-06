@@ -14,6 +14,7 @@ fn main() {
 
     loop {
         explored.insert(guard.coord);
+
         let new_pos = guard.coord + guard.facing;
         if !grid.contains(&new_pos) {
             break;
