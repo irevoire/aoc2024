@@ -38,7 +38,7 @@ fn valid(report: &Report) -> bool {
             |acc, (el, op)| match op {
                 Op::Add => acc + *el,
                 Op::Mul => acc * *el,
-                Op::Concatenate => format!("{acc}{el}").parse().unwrap(),
+                Op::Concatenate => acc * (10_isize.pow(el.ilog10() + 1)) + el,
             },
         );
         if num == report.target {
